@@ -19,6 +19,19 @@
 */
 
 
+varying vec3 coord;
+uniform float layer_height;
+uniform float target_layer;
+
+
 void main() {
+  if (coord.z < 0.0 || (coord.z > (target_layer + layer_height))) {
+    discard;
+  }
+  else if (coord.z >= target_layer && coord.z <= target_layer + layer_height) {
     gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+  }
+  else {
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+  }
 }

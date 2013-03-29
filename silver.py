@@ -27,7 +27,7 @@ from glsl import Shader
 from vector_model import VectorModel
 
 
-def setup_context(model, scale=5.0):
+def setup_context(model, scale=1.0):
     width = int(math.ceil(model.width)*scale)+2
     height = int(math.ceil(model.depth)*scale)+2
     window = pyglet.window.Window(width, height, visible=True)
@@ -40,6 +40,7 @@ def setup_context(model, scale=5.0):
     shader.uniformf("offset_x", (model.min[0]*-1))
     shader.uniformf("offset_y", (model.min[1]*-1))
     shader.uniformf("scale", scale)
+    window.shader = shader
     return window
 
 
@@ -55,15 +56,9 @@ def render(model):
     glEnableClientState(GL_VERTEX_ARRAY)
     glVertexPointer(3, GL_FLOAT, 0, vertices)
     glDrawArrays(GL_TRIANGLES, 0, vert_count/3)
-    
 
-if __name__ == "__main__":
-    print "--> Parsing model..."
-    model = VectorModel(sys.argv[1])
-    print "--> Rendering crossections..."
-    ctx = setup_context(model)
-    #gl.glColor3f(1.0, 1.0, 1.0)
-    
+
+def process(ctx, model):
     @ctx.event
     def on_draw():
         render(model)
@@ -78,5 +73,16 @@ if __name__ == "__main__":
         ctx.flip()
 
     print "--> Rendered %s faces." % (len(model.vertbuffer)/3)
-
     dump_buffer()
+    
+
+if __name__ == "__main__":
+    print "--> Parsing model..."
+    model = VectorModel(sys.argv[1])
+    print "--> Rendering crossections..."
+    ctx = setup_context(model)
+
+    ctx.shader.uniformf("layer_height", .4)
+    ctx.shader.uniformf("target_layer", 1.0)
+
+    process(ctx, model)
