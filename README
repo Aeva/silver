@@ -1,0 +1,3 @@
+
+Silver is a tool for creating bitmap cross sections from vector based
+3D models.  Silver uses opengl to accomplish this.
