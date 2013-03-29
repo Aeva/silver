@@ -41,6 +41,12 @@ def setup_context(model, scale=1.0):
     shader.uniformf("offset_y", (model.min[1]*-1))
     shader.uniformf("scale", scale)
     window.shader = shader
+
+    gl.glMatrixMode(gl.GL_PROJECTION)
+    gl.glLoadIdentity()
+    gl.glOrtho(0, width, 0, height, -1, 1)
+    gl.glMatrixMode(gl.GL_MODELVIEW)
+
     return window
 
 
@@ -61,10 +67,19 @@ def render(model):
 def process(ctx, model):
     @ctx.event
     def on_draw():
+        ctx.shader.uniformi("jitter", 0)
+        ctx.shader.uniformf("magnitude", 0.0)
         render(model)
 
+        for mag in range(1,10):
+            ctx.shader.uniformf("magnitude", mag)
+            for jit in range(1,9):
+                ctx.shader.uniformi("jitter", jit)
+
+                render(model)
+
     #pyglet being weird... why does this need to happen thrice?
-    for i in range(3):
+    for i in range(2):
         pyglet.clock.tick()
         ctx.clear()
         ctx.switch_to()
@@ -80,9 +95,10 @@ if __name__ == "__main__":
     print "--> Parsing model..."
     model = VectorModel(sys.argv[1])
     print "--> Rendering crossections..."
-    ctx = setup_context(model)
+    ctx = setup_context(model, 5)
 
     ctx.shader.uniformf("layer_height", .4)
-    ctx.shader.uniformf("target_layer", 1.0)
+    ctx.shader.uniformf("target_layer", 1)
 
     process(ctx, model)
+    import pdb; pdb.set_trace()

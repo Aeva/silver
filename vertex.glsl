@@ -22,6 +22,8 @@
 uniform float offset_x;
 uniform float offset_y;
 uniform float scale;
+uniform int jitter;
+uniform float magnitude;
 
 varying vec3 coord;
 
@@ -32,5 +34,39 @@ void main() {
   vertex.x = (vertex.x+offset_x) * scale + 1.0;
   vertex.y = (vertex.y+offset_y) * scale + 1.0;
   vertex.z *= scale;
+
+  if (jitter > 0) {
+    int phase = jitter-1;
+    float dist = magnitude * .05;
+
+    if (phase == 0) {
+      vertex.x += dist;
+      vertex.y += dist;
+    }
+    else if (phase == 1) {
+      vertex.x += dist;
+      vertex.y -= dist;
+    }
+    else if (phase == 2) {
+      vertex.x -= dist;
+      vertex.y += dist;
+    }
+    else if (phase == 3) {
+      vertex.x -= dist;
+      vertex.y -= dist;
+    }
+    else if (phase == 4) {
+      vertex.x += dist;
+    }
+    else if (phase == 5) {
+      vertex.x -= dist;
+    }
+    else if (phase == 6) {
+      vertex.y += dist;
+    }
+    else if (phase == 7) {
+      vertex.y -= dist;
+    }
+  }
   gl_Position = gl_ModelViewProjectionMatrix * vertex;
 }

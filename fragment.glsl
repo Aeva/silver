@@ -25,13 +25,20 @@ uniform float target_layer;
 
 
 void main() {
-  if (coord.z < 0.0 || (coord.z > (target_layer + layer_height))) {
-    discard;
-  }
-  else if (coord.z >= target_layer && coord.z <= target_layer + layer_height) {
+  if (coord.z < 0.0 && target_layer < 1.0) {
     gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
   }
+  else if (coord.z > (target_layer + layer_height)) {
+    discard;
+  }
   else {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    float layer_start = target_layer * layer_height;
+    if (coord.z >= layer_start && coord.z <= layer_start + layer_height) {
+      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    }
+    else {
+      //gl_FragColor = vec4(0.1, 0.1, 0.1, 1.0);
+      discard;
+    }
   }
 }
